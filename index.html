@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Vue</title>
+	<style type="text/css">
+		input {
+			background-color: cyan;
+		}
+	</style>
+</head>
+
+<body>
+<div id="main">
+	<h3>Hola aplicación {{ name_app }}</h3>
+    
+    <form>
+		<fieldset>
+			<label>
+				Nombre
+			</label>
+			<input v-model="firstName" placeholder="Escribe tu nombre" name="">
+
+			<label>
+				Apellido
+			</label>
+			<input v-model="lastName" placeholder="Escribe tu apellido" name="">
+		</fieldset>
+
+		<label>
+			Tu nombre completo es: <span>{{ fullName }}</span>
+		</label>
+		<br>
+		<button @click="addName">Guardar Nombre</button>
+	</form>
+
+	<h4>Lista de nombres completos:</h4>
+	<ul>
+		<li v-for="(name, index) in namesList" :key="index">{{ name }}</li>
+	</ul>
+
+	<fieldset>
+		<label for="number1">Número 1:</label>
+		<input type="number" v-model.number="number1">
+
+		<label for="number2">Número 2:</label>
+		<input type="number" v-model.number="number2">
+		<p>La suma es: {{ sumNumbers() }}</p>
+	</fieldset>
+
+	<div>
+		<button @click="count++">
+		  Haz clic aquí: {{ count }}
+		</button>
+	</div>
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+<script>
+  const { createApp, ref, computed, onMounted } = Vue
+
+  createApp({
+    setup() {
+      const name_app = ref('Mi App con Vue.js')
+      const firstName = ref('')  
+      const lastName = ref('')  
+      const count = ref(0)   
+	  const number1 = ref(0)
+      const number2 = ref(0)   
+      const namesList = ref([])
+
+	  const sumNumbers = () => {
+		return number1.value + number2.value
+	  }
+
+	  const fullName = computed(() => {
+		return `${firstName.value} ${lastName.value}`
+	  })
+
+	  const addName = () => {
+		if (firstName.value && lastName.value) {
+		  namesList.value.push(fullName.value)
+		  localStorage.setItem('namesList', JSON.stringify(namesList.value)) 
+		  firstName.value = ''
+		  lastName.value = ''
+		}
+	  }
+
+	  onMounted(() => {
+		const storedNames = localStorage.getItem('namesList')
+		if (storedNames) {
+		  namesList.value = JSON.parse(storedNames)
+		}
+	  })
+
+      return {
+        name_app,
+        firstName,
+        lastName,
+        fullName,
+        count,
+		number1,
+		number2,
+		sumNumbers,
+		namesList,
+		addName
+      }
+    }
+  }).mount('#main')
+</script>
+
+</body>
+</html>
